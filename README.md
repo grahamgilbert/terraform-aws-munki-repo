@@ -55,3 +55,11 @@ Then you can get your distribution's url:
 ``` bash
 $ terraform state show module.munki.aws_cloudfront_distribution.www_distribution | grep domain_name
 ```
+
+## Getting your Munki repo into s3
+
+Assuming your repo is in `/Users/Shared/munki_repo` - adjust this path for your environment.
+
+``` bash
+$ aws s3 sync "/Users/Shared/munki_repo" s3://my-bucket-name --exclude '*.git/*' --exclude '.DS_Store' --delete
+```
