@@ -11,7 +11,7 @@
 
 A Munki repo is a basic web server. But you still need to worry about setting up one or more servers, patching those servers, scaling them around the world if you have clients in more than one country.
 
-Amazon Web Services have crazy high levels of up time - more than we could ever manage ourselves. So it makes sense to offload the running of these services so we can get on with our day.
+Amazon Web Services have crazy high levels of up time - more than we could ever manage ourselves. CloudFront powers some of the world's busiest websites without breaking a sweat, so it can handle your Munki repo without any trouble. So it makes sense to offload the running of these services so we can get on with our day.
 
 ## Usage
 
@@ -35,6 +35,8 @@ module "munki" {
   munki_s3_bucket = "my-munki-bucket"
   username        = "munki"
   password        = "ilovemunki"
+  # price_class is one of PriceClass_All, PriceClass_200, PriceClass_100
+  price_class = "PriceClass_100"
 }
 ```
 
@@ -63,3 +65,5 @@ Assuming your repo is in `/Users/Shared/munki_repo` - adjust this path for your 
 ``` bash
 $ aws s3 sync "/Users/Shared/munki_repo" s3://my-bucket-name --exclude '*.git/*' --exclude '.DS_Store' --delete
 ```
+
+Now it's just a matter of configuring your Munki clients to connect to your new repo. The [Munki wiki](https://github.com/munki/munki/wiki/Using-Basic-Authentication#configuring-the-clients-to-use-a-password) has you covered there.
