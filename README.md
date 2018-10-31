@@ -53,5 +53,5 @@ $ terraform apply
 Then you can get your distribution's url:
 
 ``` bash
-terraform state show module.munki.aws_cloudfront_distribution.www_distribution | grep domain_name
+$ terraform state show module.munki.aws_cloudfront_distribution.www_distribution | grep domain_name
 ```

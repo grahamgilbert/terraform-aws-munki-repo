@@ -33,7 +33,7 @@ data "template_file" "basic_auth_js" {
 data "archive_file" "basic_auth_lambda_zip" {
   type = "zip"
 
-  utput_path              = "basic_auth_lambda.zip"
+  output_path             = "basic_auth_lambda.zip"
   source_content          = "${data.template_file.basic_auth_js.rendered}"
   source_content_filename = "basic_auth.js"
 }
