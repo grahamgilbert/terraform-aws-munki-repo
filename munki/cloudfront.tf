@@ -42,6 +42,57 @@ resource "aws_cloudfront_distribution" "www_distribution" {
     }
   }
 
+  ordered_cache_behavior {
+    path_pattern     = "/catalogs/*"
+    lambda_function_association {
+      event_type = "viewer-request"
+      lambda_arn = "${aws_lambda_function.basic_auth_lambda.arn}:${aws_lambda_function.basic_auth_lambda.version}"
+    }
+
+    viewer_protocol_policy = "redirect-to-https"
+    compress               = true
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+    min_ttl          = 0
+    default_ttl      = 30
+    max_ttl          = 60
+    target_origin_id = "munki"
+    forwarded_values {
+      query_string = false
+
+      cookies {
+        forward = "none"
+      }
+    }
+  }
+
+  ordered_cache_behavior {
+    path_pattern     = "/manifests/*"
+    min_ttl          = 0
+    default_ttl      = 30
+    max_ttl          = 60
+    lambda_function_association {
+      event_type = "viewer-request"
+      lambda_arn = "${aws_lambda_function.basic_auth_lambda.arn}:${aws_lambda_function.basic_auth_lambda.version}"
+    }
+
+    viewer_protocol_policy = "redirect-to-https"
+    compress               = true
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+    min_ttl          = 0
+    default_ttl      = 30
+    max_ttl          = 60
+    target_origin_id = "munki"
+    forwarded_values {
+      query_string = false
+
+      cookies {
+        forward = "none"
+      }
+    }
+  }
+
   restrictions {
     geo_restriction {
       restriction_type = "none"
