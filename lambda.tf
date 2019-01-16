@@ -45,5 +45,5 @@ resource "aws_lambda_function" "basic_auth_lambda" {
   handler          = "basic_auth.handler"
   source_code_hash = "${data.archive_file.basic_auth_lambda_zip.output_base64sha256}"
   runtime          = "nodejs8.10"
-  publish          = true
+  # publish          = true
 }
