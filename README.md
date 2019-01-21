@@ -33,7 +33,8 @@ Create a file called `main.tf` wherever you want to store these things. Put the 
 
 ``` terraform
 module "munki" {
-  source          = "git::https://github.com/grahamgilbert/terraform-munki-repo.git//munki"
+  source  = "grahamgilbert/munki/repo"
+  version = "0.0.3"
   munki_s3_bucket = "my-munki-bucket"
   username        = "munki"
   password        = "ilovemunki"
