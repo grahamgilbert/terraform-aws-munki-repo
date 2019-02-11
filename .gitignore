@@ -2,3 +2,4 @@ lambda_code/*
 .terraform
 terraform.tfstate*
 *.zip
+.terraform*
