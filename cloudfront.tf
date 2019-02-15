@@ -19,7 +19,7 @@ resource "aws_cloudfront_distribution" "www_distribution" {
   default_cache_behavior {
     lambda_function_association {
       event_type = "viewer-request"
-      lambda_arn = "${aws_lambda_function.basic_auth_lambda.arn}"
+      lambda_arn = "${aws_lambda_function.basic_auth_lambda.arn}:${aws_lambda_function.basic_auth_lambda.version}"
     }
 
     viewer_protocol_policy = "redirect-to-https"
