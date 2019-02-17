@@ -1,5 +1,5 @@
 resource "aws_iam_role" "iam_for_lambda" {
-  name = "iam_for_lambda"
+  name = "${var.prefix}_iam_for_lambda"
 
   assume_role_policy = <<EOF
 {
@@ -40,10 +40,11 @@ data "archive_file" "basic_auth_lambda_zip" {
 
 resource "aws_lambda_function" "basic_auth_lambda" {
   filename         = "basic_auth_lambda.zip"
-  function_name    = "munki_basic_auth"
+  function_name    = "${var.prefix}_basic_auth"
   role             = "${aws_iam_role.iam_for_lambda.arn}"
   handler          = "basic_auth.handler"
   source_code_hash = "${data.archive_file.basic_auth_lambda_zip.output_base64sha256}"
   runtime          = "nodejs8.10"
-  # publish          = true
+
+  publish = true
 }
