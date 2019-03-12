@@ -39,6 +39,7 @@ data "archive_file" "basic_auth_lambda_zip" {
 }
 
 resource "aws_lambda_function" "basic_auth_lambda" {
+  provider         = "aws.us-east-1"
   filename         = "basic_auth_lambda.zip"
   function_name    = "${var.prefix}_basic_auth"
   role             = "${aws_iam_role.iam_for_lambda.arn}"
