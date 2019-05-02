@@ -34,10 +34,11 @@ Create a file called `main.tf` wherever you want to store these things. Put the 
 ``` terraform
 module "munki-repo" {
   source  = "grahamgilbert/munki-repo/aws"
-  version = "0.0.4"
+  version = "0.0.5"
   munki_s3_bucket = "my-munki-bucket"
   username        = "munki"
   password        = "ilovemunki"
+  prefix          = "some_prefix_to_make_this_unique"
   # price_class is one of PriceClass_All, PriceClass_200, PriceClass_100
   price_class = "PriceClass_100"
 }
