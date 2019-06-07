@@ -83,9 +83,6 @@ resource "aws_cloudfront_distribution" "www_distribution" {
     compress               = true
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
-    min_ttl                = 0
-    default_ttl            = 30
-    max_ttl                = 60
     target_origin_id       = "munki"
 
     forwarded_values {
