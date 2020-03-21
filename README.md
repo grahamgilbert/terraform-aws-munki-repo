@@ -1,6 +1,6 @@
 # Terraform Munki Repo
 
-`terraform-munki-repo` is a [Terraform](https://terraform.io) module that will set up a production-ready Munki repo for you. More specifically, it will create:
+`terraform-munki-repo` is a [Terraform](https://terraform.io) module that will set up a production-ready Munki repo for you. It is designed for use with Terraform 0.11.x More specifically, it will create:
 
 * An S3 bucket to store your Munki repo
 * An S3 bucket to store your logs
