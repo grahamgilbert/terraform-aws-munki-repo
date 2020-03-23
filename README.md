@@ -22,27 +22,90 @@ Amazon Web Services has crazy-high levels of uptime - more than we could ever ma
   `AmazonS3FullAccess`,
   `CloudFrontFullAccess`
 3) Generate an access key and secret key for the user. Download the CSV (or you'll lose the secret key; it's only displayed once at initial creation).
-4) Install [homebrew](https://brew.sh)
-5) Run `brew install awscli`
-6) Run `brew install terraform`
-7) Run `aws configure` and follow the prompts to log in and to set a default region (I like `us-east-1` but choose one where you are happy having your data stored)
+4) Install `awscli` from https://awscli.amazonaws.com/AWSCLIV2.pkg
+5) Install terraform 0.11.14 (0.12.x will print distractiing warnings) from  https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_darwin_amd64.zip (Unzip and copy the `terraform` binary to `/usr/local/bin/terraform`)
+5) Run `aws configure`.
+    * For "AWS Access Key ID" enter the "Access key ID" from the credentials.csv you downloaded in step 3.
+    * For "AWS Secret Access Key" enter the "Secret access key" from the credentials.csv you downloaded in step 3.
+    * For "Default region name" enter "us-east-1". Lambda@Edge currently requires the us-east-1 region.
+    * For "Default output format" enter either "text" or "json" (or whatever you prefer)
 
 ### Terraform Usage
 
-Create a file called `main.tf` wherever you want to store these things. Put the following content in it - adjust the variables to match what you want the bucket to be called (the name must be globally unique across all of Amazon), and the username and password your Munki clients will use to access the repo)
+Create a new empty directory wherever you want to store this. Inside that directory, create a file called `main.tf`. Put the following content in it - adjust the variables to match what you want the bucket to be called (the name must be globally unique across all of Amazon), and the username and password your Munki clients will use to access the repo)
 
 ``` terraform
+# change the following variables
+
+# prefix should be globally unique. Some characters seem to cause issues;
+# I'd recommend sticking with lower-case-letters and underscores
+# Something like org_yourorg_munki might be a good prefix.
+variable "prefix" {
+  default = "you_better_change_me"
+}
+
+# you'd need to change this only if you have an existing bucket named
+# "munki-s3-bucket"
+variable "munki_s3_bucket" {
+  default = "munki-s3-bucket"
+}
+
+# the price class for your CloudFront distribution
+# one of PriceClass_All, PriceClass_200, PriceClass_100
+variable "price_class" {
+  default = "PriceClass_100"
+}
+
+# the username your Munki clients will use for BasicAuthentication
+variable "username" {
+  default = "YOU_BETTER_CHANGE_ME"
+}
+
+# the password your Munki clients will use for BasicAuthentication
+variable "password" {
+  default = "YOU_BETTER_CHANGE_ME"
+}
+
+
+# the rest should be able to be left as-is unless you are an expert
+
+# NOTE: currently the _only_ supported provider region is us-east-1.
+provider "aws" {
+  region  = "us-east-1"
+}
+
 module "munki-repo" {
   source  = "grahamgilbert/munki-repo/aws"
-  version = "0.1.0"
-  munki_s3_bucket = "my-munki-bucket"
-  username        = "munki"
-  password        = "ilovemunki"
-  prefix          = "some_prefix_to_make_this_unique"
-  # price_class is one of PriceClass_All, PriceClass_200, PriceClass_100
-  price_class = "PriceClass_100"
+  version = "0.1.11"
+  munki_s3_bucket = "${var.munki_s3_bucket}"
+  username        = "${var.username}"
+  password        = "${var.password}"
+  prefix          = "${var.prefix}"
+  price_class = "${var.price_class}"
 }
+
+# These help you get the information you'll need to do the repo sync
+# and to configure your Munki clients to use your new cloud repo
+
+output "cloudfront_url" {
+  value = "${module.munki-repo.cloudfront_url}"
+}
+
+output "munki_bucket_id" {
+  value = "${module.munki-repo.munki_bucket_id}"
+}
+
+output "username" {
+  value = "${var.username}"
+}
+
+output "password" {
+  value = "${var.password}"
+}
+
 ```
+
+`cd` into the directory containing your `main.tf` and run the following commands:
 
 ``` bash
 $ terraform init
@@ -59,15 +122,32 @@ $ terraform apply
 Then you can get your distribution's url:
 
 ``` bash
-$ terraform state show module.munki-repo.aws_cloudfront_distribution.www_distribution | grep domain_name
+$ terraform output cloudfront_url
 ```
+
+Get the S3 bucket id:
+
+``` bash
+$ terraform output munki_bucket_id
+```
+(Unless you've changed it from the suggested name in the `main.tf` above, it will be "munki-s3-bucket")
+
+Get the username and password:
+
+``` bash
+$ terraform output username
+$ terraform output password
+```
+
+(Again these should match the ones you put into `main.tf`)
 
 ## Getting your Munki repo into S3
 
 Assuming your repo is in `/Users/Shared/munki_repo` - adjust this path for your environment.
 
 ``` bash
-$ aws s3 sync "/Users/Shared/munki_repo" s3://my-bucket-name --exclude '*.git/*' --exclude '.DS_Store' --delete
+$ aws s3 sync "/Users/Shared/munki_repo" s3://<munki_bucket_id> --exclude '*.git/*' --exclude '.DS_Store' --delete
 ```
+(Be sure to substitute your actual munki_bucket_id for `<munki_bucket_id>` -- unless you've changed things in `main.tf` it will be "munki-s3-bucket")
 
-Now it's just a matter of configuring your Munki clients to connect to your new repo. The [Munki wiki](https://github.com/munki/munki/wiki/Using-Basic-Authentication#configuring-the-clients-to-use-a-password) has you covered there.
+Now it's just a matter of configuring your Munki clients to connect to your new repo. The [Munki wiki](https://github.com/munki/munki/wiki/Using-Basic-Authentication#configuring-the-clients-to-use-a-password) covers configuring the clients to use BasicAuthentication using the username and password you've chosen. Be sure also to set Munki's `SoftwareRepoURL` to "https://<cloudfront_url>" where you substitute the cloudfront_url you retreived earlier.
