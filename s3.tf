@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "www" {
-  bucket = "${var.munki_s3_bucket}"
+  bucket = "${var.prefix}-${var.munki_s3_bucket}"
 
   logging {
     target_bucket = "${aws_s3_bucket.log_bucket.id}"
@@ -45,7 +45,7 @@ resource "aws_s3_bucket_policy" "www" {
 }
 
 resource "aws_s3_bucket" "log_bucket" {
-  bucket = "${var.munki_s3_bucket}-logs"
+  bucket = "${var.prefix}-${var.munki_s3_bucket}-logs"
   acl    = "log-delivery-write"
 
   lifecycle_rule {
