@@ -66,8 +66,53 @@ variable "password" {
   default = "YOU_BETTER_CHANGE_ME"
 }
 
-
 # the rest should be able to be left as-is unless you are an expert
+
+# minimum amount of time (in seconds) that you want objects to stay in CloudFront caches before CloudFront queries your origin to see whether the object has been updated checks for updates
+variable "default_cache_behavior_min_ttl" {
+  default = 0
+}
+
+# default amount of time (in seconds) that an object is in a CloudFront cache before CloudFront forwards another request in the absence of an Cache-Control max-age or Expires header
+variable "default_cache_behavior_default_ttl" {
+  default = 86400
+}
+
+# maximum amount of time (in seconds) that an object is in a CloudFront cache before CloudFront forwards another request to your origin to determine whether the object has been updated
+variable "default_cache_behavior_max_ttl" {
+  default = 31536000
+}
+
+# minimum amount of time (in seconds) that you want catalog objects to stay in CloudFront caches before CloudFront queries your origin to see whether the object has been updated
+variable "catalogs_ordered_cache_behavior_min_ttl" {
+  default = 0
+}
+
+# default amount of time (in seconds) that a catalog object is in a CloudFront cache before CloudFront forwards another request in the absence of an Cache-Control max-age or Expires header
+variable "catalogs_ordered_cache_behavior_default_ttl" {
+  default = 30
+}
+
+# maximum amount of time (in seconds) that a catalog object is in a CloudFront cache before CloudFront forwards another request to your origin to determine whether the object has been updated
+variable "catalogs_ordered_cache_behavior_max_ttl" {
+  default = 60
+}
+
+# minimum amount of time (in seconds) that you want manifest objects to stay in CloudFront caches before CloudFront queries your origin to see whether the object has been updated
+variable "manifests_ordered_cache_behavior_min_ttl" {
+  default = 0
+}
+
+# default amount of time (in seconds) that a manifest object is in a CloudFront cache before CloudFront forwards another request in the absence of an Cache-Control max-age or Expires header
+variable "manifests_ordered_cache_behavior_default_ttl" {
+  default = 30
+}
+
+# maximum amount of time (in seconds) that a manifest object is in a CloudFront cache before CloudFront forwards another request to your origin to determine whether the object has been updated
+variable "manifests_ordered_cache_behavior_max_ttl" {
+  default = 60
+}
+
 
 # NOTE: currently the _only_ supported provider region is us-east-1.
 provider "aws" {
