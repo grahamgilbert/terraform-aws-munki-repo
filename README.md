@@ -113,6 +113,21 @@ variable "manifests_ordered_cache_behavior_max_ttl" {
   default = 60
 }
 
+# minimum amount of time (in seconds) that you want icon objects to stay in CloudFront caches before CloudFront queries your origin to see whether the object has been updated
+variable "icons_ordered_cache_behavior_min_ttl" {
+  default = 0
+}
+
+# default amount of time (in seconds) that a icon object is in a CloudFront cache before CloudFront forwards another request in the absence of an Cache-Control max-age or Expires header
+variable "icons_ordered_cache_behavior_default_ttl" {
+  default = 30
+}
+
+# maximum amount of time (in seconds) that a icon object is in a CloudFront cache before CloudFront forwards another request to your origin to determine whether the object has been updated
+variable "icons_ordered_cache_behavior_max_ttl" {
+  default = 60
+}
+
 
 # NOTE: currently the _only_ supported provider region is us-east-1.
 provider "aws" {
