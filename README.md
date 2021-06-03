@@ -135,13 +135,13 @@ provider "aws" {
 }
 
 module "munki-repo" {
-  source  = "grahamgilbert/munki-repo/aws"
-  version = "0.2.0"
+  source          = "grahamgilbert/munki-repo/aws"
+  version         = "0.2.0"
   munki_s3_bucket = "${var.munki_s3_bucket}"
   username        = "${var.username}"
   password        = "${var.password}"
   prefix          = "${var.prefix}"
-  price_class = "${var.price_class}"
+  price_class     = "${var.price_class}"
 }
 
 # These help you get the information you'll need to do the repo sync
