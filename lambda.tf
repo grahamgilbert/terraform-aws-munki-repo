@@ -22,11 +22,11 @@ EOF
 }
 
 data "template_file" "basic_auth_js" {
-  template = "${file("${path.module}/basic_auth.js.tpl")}"
+  template = file("${path.module}/basic_auth.js.tpl")
 
   vars = {
-    username = "${var.username}"
-    password = "${var.password}"
+    username = var.username
+    password = var.password
   }
 }
 
@@ -34,17 +34,17 @@ data "archive_file" "basic_auth_lambda_zip" {
   type = "zip"
 
   output_path             = "basic_auth_lambda.zip"
-  source_content          = "${data.template_file.basic_auth_js.rendered}"
+  source_content          = data.template_file.basic_auth_js.rendered
   source_content_filename = "basic_auth.js"
 }
 
 resource "aws_lambda_function" "basic_auth_lambda" {
-  provider         = "aws.use1"
+  provider         = aws.use1
   filename         = "basic_auth_lambda.zip"
   function_name    = "${var.prefix}_basic_auth"
-  role             = "${aws_iam_role.iam_for_lambda.arn}"
+  role             = aws_iam_role.iam_for_lambda.arn
   handler          = "basic_auth.handler"
-  source_code_hash = "${data.archive_file.basic_auth_lambda_zip.output_base64sha256}"
+  source_code_hash = data.archive_file.basic_auth_lambda_zip.output_base64sha256
   runtime          = "nodejs14.x"
 
   publish = true
