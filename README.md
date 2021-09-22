@@ -1,6 +1,6 @@
 # Terraform Munki Repo
 
-`terraform-munki-repo` is a [Terraform](https://terraform.io) module that will set up a production-ready Munki repo for you. It is designed for use with Terraform 0.11.x More specifically, it will create:
+`terraform-munki-repo` is a [Terraform](https://terraform.io) module that will set up a production-ready Munki repo for you. It is designed for use with Terraform 1.0.x More specifically, it will create:
 
 - An S3 bucket to store your Munki repo
 - An S3 bucket to store your logs
@@ -23,7 +23,7 @@ Amazon Web Services has crazy-high levels of uptime - more than we could ever ma
    `CloudFrontFullAccess`
 3. Generate an access key and secret key for the user. Download the CSV (or you'll lose the secret key; it's only displayed once at initial creation).
 4. Install `awscli` from https://awscli.amazonaws.com/AWSCLIV2.pkg
-5. Install terraform 0.11.14 (0.12.x will print distractiing warnings) from https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_darwin_amd64.zip (Unzip and copy the `terraform` binary to `/usr/local/bin/terraform`)
+5. Install terraform 1.0.7 from https://releases.hashicorp.com/terraform/1.0.7/terraform_1.0.7_darwin_amd64.zip (Unzip and copy the `terraform` binary to `/usr/local/bin/terraform`)
 6. Run `aws configure`.
    - For "AWS Access Key ID" enter the "Access key ID" from the credentials.csv you downloaded in step 3.
    - For "AWS Secret Access Key" enter the "Secret access key" from the credentials.csv you downloaded in step 3.
@@ -137,30 +137,30 @@ provider "aws" {
 module "munki-repo" {
   source          = "grahamgilbert/munki-repo/aws"
   version         = "0.2.0"
-  munki_s3_bucket = "${var.munki_s3_bucket}"
-  username        = "${var.username}"
-  password        = "${var.password}"
-  prefix          = "${var.prefix}"
-  price_class     = "${var.price_class}"
+  munki_s3_bucket = var.munki_s3_bucket
+  username        = var.username
+  password        = var.password
+  prefix          = var.prefix
+  price_class     = var.price_class
 }
 
 # These help you get the information you'll need to do the repo sync
 # and to configure your Munki clients to use your new cloud repo
 
 output "cloudfront_url" {
-  value = "${module.munki-repo.cloudfront_url}"
+  value = module.munki-repo.cloudfront_url
 }
 
 output "munki_bucket_id" {
-  value = "${module.munki-repo.munki_bucket_id}"
+  value = module.munki-repo.munki_bucket_id
 }
 
 output "username" {
-  value = "${var.username}"
+  value = var.username
 }
 
 output "password" {
-  value = "${var.password}"
+  value = var.password
 }
 
 ```
