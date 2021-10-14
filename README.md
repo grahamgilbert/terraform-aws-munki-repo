@@ -212,4 +212,4 @@ $ aws s3 sync "/Users/Shared/munki_repo" s3://<munki_bucket_id> --exclude '*.git
 
 (Be sure to substitute your actual munki_bucket_id for `<munki_bucket_id>` -- unless you've changed things in `main.tf` it will be "munki-s3-bucket")
 
-Now it's just a matter of configuring your Munki clients to connect to your new repo. The [Munki wiki](https://github.com/munki/munki/wiki/Using-Basic-Authentication#configuring-the-clients-to-use-a-password) covers configuring the clients to use BasicAuthentication using the username and password you've chosen. Be sure also to set Munki's `SoftwareRepoURL` to "https://<cloudfront_url>" where you substitute the cloudfront_url you retreived earlier.
+Now it's just a matter of configuring your Munki clients to connect to your new repo. The [Munki wiki](https://github.com/munki/munki/wiki/Using-Basic-Authentication#configuring-the-clients-to-use-a-password) covers configuring the clients to use BasicAuthentication using the username and password you've chosen. Be sure also to set Munki's `SoftwareRepoURL` to "https://<cloudfront_url>" where you substitute the cloudfront_url you retrieved earlier.
