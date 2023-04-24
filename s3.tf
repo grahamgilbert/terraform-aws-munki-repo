@@ -1,10 +1,12 @@
 resource "aws_s3_bucket" "www" {
   bucket = "${var.prefix}-${var.munki_s3_bucket}"
+}
 
-  logging {
-    target_bucket = aws_s3_bucket.log_bucket.id
-    target_prefix = "logs/"
-  }
+resource "aws_s3_bucket_logging" "www_logging" {
+  bucket = aws_s3_bucket.www.id
+
+  target_bucket = aws_s3_bucket.log_bucket.id
+  target_prefix = "logs/"
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_sse_config" {
@@ -12,7 +14,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_sse_config
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm     = "AES256"
     }
   }
 }
@@ -58,16 +60,16 @@ resource "aws_s3_bucket_acl" "log_bucket_acl" {
   acl    = "log-delivery-write"
 }
 
-resource "aws_s3_bucket_lifecycle_configuration" "log_bucket_lifecycle" {
+resource aws_s3_bucket_lifecycle_configuration "log_bucket_lifecycle" {
   bucket = aws_s3_bucket.log_bucket.id
 
   rule {
-    id     = "log_bucket_lifecycle"
+    id      = "log_bucket_lifecycle"
     status = "Enabled"
-
+  
     transition {
-      days          = "30"
-      storage_class = "STANDARD_IA"
-    }
+        days          = "30"
+        storage_class = "STANDARD_IA"
+      }
   }
 }
