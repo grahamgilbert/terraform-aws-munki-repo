@@ -5,16 +5,21 @@ resource "aws_s3_bucket" "www" {
     target_bucket = aws_s3_bucket.log_bucket.id
     target_prefix = "logs/"
   }
+}
 
-  acl = "private"
+resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_sse_config" {
+  bucket = aws_s3_bucket.www.id
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "AES256"
     }
   }
+}
+
+resource "aws_s3_bucket_acl" "private_acl" {
+  bucket = aws_s3_bucket.www.id
+  acl    = "private"
 }
 
 data "aws_iam_policy_document" "s3_policy" {
@@ -46,14 +51,23 @@ resource "aws_s3_bucket_policy" "www" {
 
 resource "aws_s3_bucket" "log_bucket" {
   bucket = "${var.prefix}-${var.munki_s3_bucket}-logs"
+}
+
+resource "aws_s3_bucket_acl" "log_bucket_acl" {
+  bucket = aws_s3_bucket.www.id
   acl    = "log-delivery-write"
+}
 
-  lifecycle_rule {
-    enabled = true
+resource aws_s3_bucket_lifecycle_configuration "log_bucket_lifecycle" {
+  bucket = aws_s3_bucket.log_bucket.id
 
+  rule {
+    id      = "log_bucket_lifecycle"
+    status = "Enabled"
+  
     transition {
-      days          = "30"
-      storage_class = "STANDARD_IA"
-    }
+        days          = "30"
+        storage_class = "STANDARD_IA"
+      }
   }
 }
