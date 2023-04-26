@@ -2,11 +2,29 @@ resource "aws_s3_bucket" "www" {
   bucket = "${var.prefix}-${var.munki_s3_bucket}"
 }
 
+resource "aws_s3_bucket_public_access_block" "www_access_block" {
+  bucket = aws_s3_bucket.www.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
 resource "aws_s3_bucket_logging" "www_logging" {
   bucket = aws_s3_bucket.www.id
 
   target_bucket = aws_s3_bucket.log_bucket.id
   target_prefix = "logs/"
+}
+
+resource "aws_s3_bucket_public_access_block" "log_bucket_access_block" {
+  bucket = aws_s3_bucket.log_bucket.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_sse_config" {
@@ -19,7 +37,25 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_sse_config
   }
 }
 
+resource "aws_s3_bucket_ownership_controls" "www_ownership_controls" {
+  bucket = aws_s3_bucket.www.id
+
+  rule {
+    object_ownership = "ObjectWriter"
+  }
+}
+
+resource "aws_s3_bucket_ownership_controls" "log_bucket_ownership_controls" {
+  bucket = aws_s3_bucket.log_bucket.id
+
+  rule {
+    object_ownership = "ObjectWriter"
+  }
+}
+
 resource "aws_s3_bucket_acl" "private_acl" {
+  depends_on = [aws_s3_bucket_ownership_controls.www_ownership_controls]
+
   bucket = aws_s3_bucket.www.id
   acl    = "private"
 }
@@ -56,6 +92,8 @@ resource "aws_s3_bucket" "log_bucket" {
 }
 
 resource "aws_s3_bucket_acl" "log_bucket_acl" {
+  depends_on = [aws_s3_bucket_ownership_controls.log_bucket_ownership_controls]
+
   bucket = aws_s3_bucket.log_bucket.id
   acl    = "log-delivery-write"
 }
