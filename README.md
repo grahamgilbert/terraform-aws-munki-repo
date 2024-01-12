@@ -41,7 +41,7 @@ Create a new empty directory wherever you want to store this. Inside that direct
 # I'd recommend sticking with lower-case-letters and underscores
 # Something like org_yourorg_munki might be a good prefix.
 variable "prefix" {
-  default = "you-better_"-change-me"
+  default = "you-better-change-me"
 }
 
 # you'd need to change this only if you have an existing bucket named
